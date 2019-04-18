@@ -207,7 +207,8 @@ module.exports = {
         // os:require('os'),
         // jfive:require("johnny-five"),
         // j5board:require("johnny-five").Board({repl:false})
-        nlp: require('compromise')
+        nlp: require('compromise'),
+        getUrls: require('get-urls')
     },
 
     // The following property can be used to order the categories in the editor
