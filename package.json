@@ -5,6 +5,7 @@
     "dependencies": {
         "compromise": "^11.13.2",
         "node-red-contrib-mongodb3": "~2.0.0",
+        "node-red-contrib-amqp": "^0.4.5",
         "get-urls": "^9.1.0"
     }
 }
