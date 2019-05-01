@@ -63,7 +63,7 @@
         "type": "function",
         "z": "3bb7b73c.633fc8",
         "name": "generateJsonObject",
-        "func": "const nlp = global.get('nlp');\nconst getUrls = global.get('getUrls');\nconsole.log('related links: ');\nconsole.log(getUrls(msg.payload));\nconst post = {\n  \"text\": msg.payload,\n  \"createdAt\" : new Date(),\n  \"entities\": nlp(msg.payload).topics().data(),\n  \"relatedLinks\": Array.from(getUrls(msg.payload))\n};\nmsg.payload = post;\nreturn msg;",
+        "func": "const nlp = global.get('nlp');\nconst getUrls = global.get('getUrls');\nconst post = {\n  \"text\": msg.payload,\n  \"createdAt\" : new Date(),\n  \"entities\": nlp(msg.payload).topics().data(),\n  \"relatedLinks\": Array.from(getUrls(msg.payload))\n};\nmsg.payload = post;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "x": 200,
