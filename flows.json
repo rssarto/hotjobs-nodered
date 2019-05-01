@@ -1,10 +1,45 @@
 [
     {
+        "id": "15f1dab.a9f8f25",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": ""
+    },
+    {
         "id": "3bb7b73c.633fc8",
         "type": "tab",
         "label": "Flow 2",
         "disabled": false,
         "info": ""
+    },
+    {
+        "id": "858a73c2.a6403",
+        "type": "amqp-server",
+        "z": "",
+        "host": "hst-rabbit-mq",
+        "port": "5672",
+        "vhost": "",
+        "keepalive": "30",
+        "usetls": false,
+        "verifyservercert": true,
+        "usetopology": false,
+        "topology": "{\n\t\"exchanges\": [\n\t\t{\"name\": \"exchange1\", \"type\": \"direct\", \"options\": {\"durable\": false}},\n\t\t{\"name\": \"exchange2\"}\n\t],\n\t\"queues\": [\n\t\t{\"name\": \"queue1\", \"options\": {\"messageTtl\": 60000}},\n\t\t{\"name\": \"queue2\"}\n\t],\n\t\"bindings\": [\n\t\t{\"source\": \"exchange1\", \"queue\": \"queue1\", \"pattern\": \"debug\", \"args\": {}},\n\t\t{\"source\": \"exchange1\", \"exchange\": \"exchange2\", \"pattern\": \"error\"},\n\t\t{\"source\": \"exchange2\", \"queue\": \"queue2\"}\n\t]\n}"
+    },
+    {
+        "id": "b49ba76c.19a108",
+        "type": "mongodb3",
+        "z": "",
+        "uri": "mongodb://hst-mongodb:27017/post",
+        "name": "Posts",
+        "options": "",
+        "parallelism": "-1"
+    },
+    {
+        "id": "97f15423.b3c8f8",
+        "type": "twitter-credentials",
+        "z": "",
+        "screen_name": "rssarto"
     },
     {
         "id": "58b1acfe.4a4f04",
@@ -24,21 +59,6 @@
         ]
     },
     {
-        "id": "20d38a7e.c72af6",
-        "type": "mongodb3 in",
-        "z": "3bb7b73c.633fc8",
-        "service": "_ext_",
-        "configNode": "b49ba76c.19a108",
-        "name": "",
-        "collection": "post",
-        "operation": "insertOne",
-        "x": 460,
-        "y": 360,
-        "wires": [
-            []
-        ]
-    },
-    {
         "id": "594068e5.4402c8",
         "type": "function",
         "z": "3bb7b73c.633fc8",
@@ -53,20 +73,6 @@
                 "97d82097.f4029"
             ]
         ]
-    },
-    {
-        "id": "60131c33.a171c4",
-        "type": "debug",
-        "z": "3bb7b73c.633fc8",
-        "name": "",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "false",
-        "x": 850,
-        "y": 280,
-        "wires": []
     },
     {
         "id": "97d82097.f4029",
@@ -89,28 +95,9 @@
         "y": 200,
         "wires": [
             [
-                "629686d5.642e78",
-                "20d38a7e.c72af6"
+                "642b52d2.0be70c",
+                "e367255.eaf32d8"
             ]
-        ]
-    },
-    {
-        "id": "629686d5.642e78",
-        "type": "Serial Iterator",
-        "z": "3bb7b73c.633fc8",
-        "name": "iteration over relatedLinks array",
-        "property": "payload.relatedLinks",
-        "inputFlow": "input",
-        "saveOutput": 0,
-        "recursive": 0,
-        "storeId": 0,
-        "x": 490,
-        "y": 280,
-        "wires": [
-            [
-                "3468d8d8.6cbff8"
-            ],
-            []
         ]
     },
     {
@@ -121,87 +108,15 @@
         "method": "GET",
         "ret": "obj",
         "paytoqs": false,
-        "url": "http://hst-hotjobsbackend:8080/api/v1/post/relatedLink/1/5?link=",
+        "url": "http://hst-hotjobsbackend:8080/api/v1/post/relatedLink/1/5?link={{{payload}}}",
         "tls": "",
         "proxy": "",
         "authType": "basic",
-        "x": 430,
-        "y": 80,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "3468d8d8.6cbff8",
-        "type": "function",
-        "z": "3bb7b73c.633fc8",
-        "name": "console.log",
-        "func": "console.log(msg)\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 470,
-        "y": 180,
+        "x": 656,
+        "y": 422,
         "wires": [
             [
-                "629686d5.642e78"
-            ]
-        ]
-    },
-    {
-        "id": "31ba3c12.3a77a4",
-        "type": "inject",
-        "z": "3bb7b73c.633fc8",
-        "name": "",
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "repeat": "",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "x": 120,
-        "y": 460,
-        "wires": [
-            [
-                "c1445fa3.74ffc"
-            ]
-        ]
-    },
-    {
-        "id": "c1445fa3.74ffc",
-        "type": "function",
-        "z": "3bb7b73c.633fc8",
-        "name": "array creation",
-        "func": "const post = {\n  \"text\": \"post text\",\n  \"createdAt\" : new Date(),\n  \"entities\": [],\n  \"relatedLinks\": ['https://t.co/O0yw39hYef','https://t.co/JZpGTlcujQ','https://t.co/NyLMVL58zT']\n};\nmsg.payload = post;\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 320,
-        "y": 460,
-        "wires": [
-            [
-                "642b52d2.0be70c",
-                "e367255.eaf32d8"
-            ]
-        ]
-    },
-    {
-        "id": "642b52d2.0be70c",
-        "type": "Serial Iterator",
-        "z": "3bb7b73c.633fc8",
-        "name": "test array iteration",
-        "property": "payload.relatedLinks",
-        "inputFlow": "input",
-        "saveOutput": 1,
-        "recursive": 0,
-        "storeId": 0,
-        "x": 650,
-        "y": 540,
-        "wires": [
-            [
-                "616851d1.37444"
-            ],
-            [
-                "3618edd3.4fb4d2"
+                "642b52d2.0be70c"
             ]
         ]
     },
@@ -210,46 +125,13 @@
         "type": "function",
         "z": "3bb7b73c.633fc8",
         "name": "log array iteration",
-        "func": "var http = global.get('http');\n\nvar url = 'http://hst-hotjobsbackend:8080/api/v1/post/relatedLink/1/5?link=';\n\nhttp.get(url, function(res){\n    var body = '';\n\n    res.on('data', function(chunk){\n        body += chunk;\n    });\n\n    res.on('end', function(){\n        var fbResponse = JSON.parse(body);\n        console.log(\"Got a response: \", fbResponse.picture);\n    });\n}).on('error', function(e){\n      console.log(\"Got an error: \", e);\n});\n\nconsole.log('link array iteration result:');\nconsole.log(msg);\nif( msg.payload !== 'https://t.co/O0yw39hYef'){\n    msg.payload = '';\n}\nreturn msg;",
+        "func": "const nodeFetch = global.get('node-fetch');\n/*\nvar http = global.get('http');\n\nvar url = 'http://hst-hotjobsbackend:8080/api/v1/post/relatedLink/1/5?link=' + encodeURI(msg.payload);\n\nhttp.get(url, function(res){\n    var body = '';\n\n    res.on('data', function(chunk){\n        body += chunk;\n    });\n\n    res.on('end', function(){\n        var fbResponse = JSON.parse(body);\n        console.log(\"Got a response: \", fbResponse);\n        if( fbResponse.total > 0 ){\n            msg.payload = '';\n        }\n    });\n    return msg;\n}).on('error', function(e){\n      console.log(\"Got an error: \", e);\n});\n*/\nconst result = (async function() {\n    console.log('checking link is already recorded...');\n    let fetchResult;\n    await nodeFetch('http://hst-hotjobsbackend:8080/api/v1/post/relatedLink/1/5?link=' + encodeURI(msg.payload))\n    .then(function(res){console.log('nodeFetchRetorno');});\n    // Here fetch return the promise, so we need to await it again and parse according to our needs. So, the result code would be this\n    const data = await fetchResult.text();\n    console.log('resultado...')\n    console.log(data);\n    return data;\n})();\nif( result.total > 0 ){\n    msg.payload = '';\n}\n/*\nconsole.log(msg);\nif( msg.payload !== 'https://t.co/O0yw39hYef'){\n    msg.payload = '';\n}*/\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 650,
-        "y": 460,
+        "x": 1074,
+        "y": 279,
         "wires": [
-            [
-                "642b52d2.0be70c"
-            ]
-        ]
-    },
-    {
-        "id": "d647d41b.c4b188",
-        "type": "debug",
-        "z": "3bb7b73c.633fc8",
-        "name": "",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "true",
-        "targetType": "full",
-        "x": 850,
-        "y": 720,
-        "wires": []
-    },
-    {
-        "id": "bfc60689.3e6238",
-        "type": "wait-paths",
-        "z": "3bb7b73c.633fc8",
-        "name": "",
-        "paths": "[\"path_1\",\"path_2\"]",
-        "timeout": 15000,
-        "finalTimeout": 60000,
-        "x": 630,
-        "y": 720,
-        "wires": [
-            [
-                "d647d41b.c4b188"
-            ]
+            []
         ]
     },
     {
@@ -318,13 +200,161 @@
         "y": 600,
         "wires": [
             [
-                "133438a0.be58b7",
-                "31172c20.4b9724"
+                "133438a0.be58b7"
             ]
         ]
     },
     {
-        "id": "31172c20.4b9724",
+        "id": "642b52d2.0be70c",
+        "type": "Serial Iterator",
+        "z": "3bb7b73c.633fc8",
+        "name": "test array iteration",
+        "property": "payload.relatedLinks",
+        "inputFlow": "input",
+        "saveOutput": 1,
+        "recursive": 0,
+        "storeId": 0,
+        "x": 650,
+        "y": 540,
+        "wires": [
+            [
+                "f1adda65.0b5b58"
+            ],
+            [
+                "3618edd3.4fb4d2"
+            ]
+        ]
+    },
+    {
+        "id": "bfc60689.3e6238",
+        "type": "wait-paths",
+        "z": "3bb7b73c.633fc8",
+        "name": "",
+        "paths": "[\"path_1\",\"path_2\"]",
+        "timeout": 15000,
+        "finalTimeout": 60000,
+        "x": 630,
+        "y": 720,
+        "wires": [
+            [
+                "b17ee24f.588d8"
+            ]
+        ]
+    },
+    {
+        "id": "d97e15df.1306b8",
+        "type": "amqp out",
+        "z": "15f1dab.a9f8f25",
+        "name": "",
+        "routingkey": "new-job",
+        "iotype": "4",
+        "ioname": "hot-jobs-queue",
+        "server": "858a73c2.a6403",
+        "x": 520,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "be9f60a1.ae073",
+        "type": "twitter in",
+        "z": "15f1dab.a9f8f25",
+        "twitter": "97f15423.b3c8f8",
+        "tags": "java developer",
+        "user": "false",
+        "name": "java developer listener",
+        "inputs": 0,
+        "x": 197.5,
+        "y": 115,
+        "wires": [
+            [
+                "d97e15df.1306b8"
+            ]
+        ],
+        "outputLabels": [
+            "msg.payload"
+        ]
+    },
+    {
+        "id": "bd5f53b5.becad",
+        "type": "twitter in",
+        "z": "15f1dab.a9f8f25",
+        "twitter": "97f15423.b3c8f8",
+        "tags": "backend developer",
+        "user": "false",
+        "name": "backend developer listener",
+        "inputs": 0,
+        "x": 210,
+        "y": 180,
+        "wires": [
+            [
+                "d97e15df.1306b8"
+            ]
+        ]
+    },
+    {
+        "id": "12072824.7c2ec8",
+        "type": "twitter in",
+        "z": "15f1dab.a9f8f25",
+        "twitter": "97f15423.b3c8f8",
+        "tags": "fullstack developer",
+        "user": "false",
+        "name": "fullstack developer listener",
+        "inputs": 0,
+        "x": 210,
+        "y": 240,
+        "wires": [
+            [
+                "d97e15df.1306b8"
+            ]
+        ]
+    },
+    {
+        "id": "b17ee24f.588d8",
+        "type": "function",
+        "z": "3bb7b73c.633fc8",
+        "name": "check if any of links is already recorded",
+        "func": "msg.isAlreadyRecorded = false;\nif( msg.paths.path_2.length > 0 ){\n    for(var index =0; index < msg.paths.path_2.length; index++ ){\n        const resultCheckUrl = msg.paths.path_2[index];\n        if( resultCheckUrl.total > 0 ){\n            msg.isAlreadyRecorded = true;\n            break;\n        }\n    }\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 715.5,
+        "y": 791,
+        "wires": [
+            [
+                "404ef20f.2e5c9c"
+            ]
+        ]
+    },
+    {
+        "id": "404ef20f.2e5c9c",
+        "type": "switch",
+        "z": "3bb7b73c.633fc8",
+        "name": "take not recorded posts",
+        "property": "isAlreadyRecorded",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "false"
+            },
+            {
+                "t": "true"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 665.5,
+        "y": 851,
+        "wires": [
+            [
+                "299f2ee5.662682"
+            ],
+            [
+                "358f3925.b168b6"
+            ]
+        ]
+    },
+    {
+        "id": "358f3925.b168b6",
         "type": "debug",
         "z": "3bb7b73c.633fc8",
         "name": "",
@@ -332,32 +362,25 @@
         "tosidebar": true,
         "console": false,
         "tostatus": false,
-        "complete": "true",
-        "targetType": "full",
-        "x": 940,
-        "y": 600,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 915.5,
+        "y": 857,
         "wires": []
     },
     {
-        "id": "858a73c2.a6403",
-        "type": "amqp-server",
-        "z": "",
-        "host": "hst-rabbit-mq",
-        "port": "5672",
-        "vhost": "",
-        "keepalive": "30",
-        "usetls": false,
-        "verifyservercert": true,
-        "usetopology": false,
-        "topology": "{\n\t\"exchanges\": [\n\t\t{\"name\": \"exchange1\", \"type\": \"direct\", \"options\": {\"durable\": false}},\n\t\t{\"name\": \"exchange2\"}\n\t],\n\t\"queues\": [\n\t\t{\"name\": \"queue1\", \"options\": {\"messageTtl\": 60000}},\n\t\t{\"name\": \"queue2\"}\n\t],\n\t\"bindings\": [\n\t\t{\"source\": \"exchange1\", \"queue\": \"queue1\", \"pattern\": \"debug\", \"args\": {}},\n\t\t{\"source\": \"exchange1\", \"exchange\": \"exchange2\", \"pattern\": \"error\"},\n\t\t{\"source\": \"exchange2\", \"queue\": \"queue2\"}\n\t]\n}"
-    },
-    {
-        "id": "b49ba76c.19a108",
-        "type": "mongodb3",
-        "z": "",
-        "uri": "mongodb://hst-mongodb:27017/post",
-        "name": "Posts",
-        "options": "",
-        "parallelism": "-1"
+        "id": "299f2ee5.662682",
+        "type": "mongodb3 in",
+        "z": "3bb7b73c.633fc8",
+        "service": "_ext_",
+        "configNode": "b49ba76c.19a108",
+        "name": "",
+        "collection": "post",
+        "operation": "insertOne",
+        "x": 658.5,
+        "y": 915,
+        "wires": [
+            []
+        ]
     }
 ]
