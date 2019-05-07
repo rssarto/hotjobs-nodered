@@ -63,7 +63,7 @@
         "type": "function",
         "z": "3bb7b73c.633fc8",
         "name": "generateJsonObject",
-        "func": "const nlp = global.get('nlp');\nconst getUrls = global.get('getUrls');\nconst post = {\n  \"text\": msg.payload,\n  \"createdAt\" : new Date(),\n  \"entities\": nlp(msg.payload).topics().data(),\n  \"relatedLinks\": Array.from(getUrls(msg.payload))\n};\nmsg.payload = post;\nreturn msg;",
+        "func": "const nlp = global.get('nlp');\nconst getUrls = global.get('getUrls');\nconst post = {\n  \"text\": msg.payload,\n  \"text_lower\": msg.payload.toLocaleLowerCase(),\n  \"createdAt\" : new Date(),\n  \"entities\": nlp(msg.payload).topics().data(),\n  \"relatedLinks\": Array.from(getUrls(msg.payload))\n};\nmsg.payload = post;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "x": 200,
@@ -118,20 +118,6 @@
             [
                 "642b52d2.0be70c"
             ]
-        ]
-    },
-    {
-        "id": "616851d1.37444",
-        "type": "function",
-        "z": "3bb7b73c.633fc8",
-        "name": "log array iteration",
-        "func": "const nodeFetch = global.get('node-fetch');\n/*\nvar http = global.get('http');\n\nvar url = 'http://hst-hotjobsbackend:8080/api/v1/post/relatedLink/1/5?link=' + encodeURI(msg.payload);\n\nhttp.get(url, function(res){\n    var body = '';\n\n    res.on('data', function(chunk){\n        body += chunk;\n    });\n\n    res.on('end', function(){\n        var fbResponse = JSON.parse(body);\n        console.log(\"Got a response: \", fbResponse);\n        if( fbResponse.total > 0 ){\n            msg.payload = '';\n        }\n    });\n    return msg;\n}).on('error', function(e){\n      console.log(\"Got an error: \", e);\n});\n*/\nconst result = (async function() {\n    console.log('checking link is already recorded...');\n    let fetchResult;\n    await nodeFetch('http://hst-hotjobsbackend:8080/api/v1/post/relatedLink/1/5?link=' + encodeURI(msg.payload))\n    .then(function(res){console.log('nodeFetchRetorno');});\n    // Here fetch return the promise, so we need to await it again and parse according to our needs. So, the result code would be this\n    const data = await fetchResult.text();\n    console.log('resultado...')\n    console.log(data);\n    return data;\n})();\nif( result.total > 0 ){\n    msg.payload = '';\n}\n/*\nconsole.log(msg);\nif( msg.payload !== 'https://t.co/O0yw39hYef'){\n    msg.payload = '';\n}*/\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 1074,
-        "y": 279,
-        "wires": [
-            []
         ]
     },
     {
@@ -250,8 +236,8 @@
         "iotype": "4",
         "ioname": "hot-jobs-queue",
         "server": "858a73c2.a6403",
-        "x": 520,
-        "y": 180,
+        "x": 524,
+        "y": 179,
         "wires": []
     },
     {
@@ -346,7 +332,8 @@
         "y": 851,
         "wires": [
             [
-                "299f2ee5.662682"
+                "694a1a0f.42be04",
+                "67cd058b.6a1a1c"
             ],
             [
                 "358f3925.b168b6"
@@ -377,10 +364,214 @@
         "name": "",
         "collection": "post",
         "operation": "insertOne",
-        "x": 658.5,
-        "y": 915,
+        "x": 823.5,
+        "y": 1195,
         "wires": [
             []
+        ]
+    },
+    {
+        "id": "a909605b.401bc",
+        "type": "http request",
+        "z": "3bb7b73c.633fc8",
+        "name": "",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "http://hst-hotjobsbackend:8080/api/v1/post/text/{{{textBeforeUrl}}}/1/5",
+        "tls": "",
+        "proxy": "",
+        "authType": "basic",
+        "x": 657,
+        "y": 981,
+        "wires": [
+            [
+                "8f209f7b.85ede"
+            ]
+        ]
+    },
+    {
+        "id": "30cd6979.c2e536",
+        "type": "inject",
+        "z": "3bb7b73c.633fc8",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 65,
+        "y": 1290,
+        "wires": [
+            [
+                "30b963da.54924c"
+            ]
+        ]
+    },
+    {
+        "id": "30b963da.54924c",
+        "type": "function",
+        "z": "3bb7b73c.633fc8",
+        "name": "create object",
+        "func": "msg.payload =         {\n            \"_id\": \"5cd1f05be690460010483151\",\n            \"text\": \"#php #java #jquery #sql #xss #html #nodejs #programmer #programming #hacker #software #softwareengineer #malware… https://t.co/PirnbN3hch\",\n            \"text_lower\": \"#php #java #jquery #sql #xss #html #nodejs #programmer #programming #hacker #software #softwareengineer #malware… https://t.co/pirnbn3hch\",\n            \"createdAt\": \"2019-05-07T20:53:47.710+0000\",\n            \"entities\": [],\n            \"relatedLinks\": [\n                \"https://t.co/PirnbN3hch\"\n            ]\n        }\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 230,
+        "y": 1292,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "694a1a0f.42be04",
+        "type": "function",
+        "z": "3bb7b73c.633fc8",
+        "name": "text without url",
+        "func": "msg.textBeforeUrl = encodeURIComponent(msg.payload.text_lower.substring(0, msg.payload.text_lower.indexOf(\"http\")));\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 447,
+        "y": 982,
+        "wires": [
+            [
+                "a909605b.401bc"
+            ]
+        ]
+    },
+    {
+        "id": "2be5cb96.c7c9a4",
+        "type": "debug",
+        "z": "3bb7b73c.633fc8",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "paths.textSearch_2.total",
+        "targetType": "msg",
+        "x": 844,
+        "y": 1243,
+        "wires": []
+    },
+    {
+        "id": "7ae4d712.52e688",
+        "type": "wait-paths",
+        "z": "3bb7b73c.633fc8",
+        "name": "",
+        "paths": "[\"textSearch_1\",\"textSearch_2\"]",
+        "timeout": 15000,
+        "finalTimeout": 60000,
+        "x": 646.5,
+        "y": 1147,
+        "wires": [
+            [
+                "871a3de0.3dac5"
+            ]
+        ]
+    },
+    {
+        "id": "8f209f7b.85ede",
+        "type": "function",
+        "z": "3bb7b73c.633fc8",
+        "name": "create text search result object",
+        "func": "msg.textSearchResult = msg.payload;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 712.5,
+        "y": 1035,
+        "wires": [
+            [
+                "ee521d29.5a4eb"
+            ]
+        ]
+    },
+    {
+        "id": "ee521d29.5a4eb",
+        "type": "change",
+        "z": "3bb7b73c.633fc8",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "paths[\"textSearch_2\"]",
+                "pt": "msg",
+                "to": "textSearchResult",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 706.5,
+        "y": 1085,
+        "wires": [
+            [
+                "7ae4d712.52e688"
+            ]
+        ]
+    },
+    {
+        "id": "67cd058b.6a1a1c",
+        "type": "change",
+        "z": "3bb7b73c.633fc8",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "paths[\"textSearch_1\"]",
+                "pt": "msg",
+                "to": "true",
+                "tot": "bool"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 351.5,
+        "y": 1146,
+        "wires": [
+            [
+                "7ae4d712.52e688"
+            ]
+        ]
+    },
+    {
+        "id": "871a3de0.3dac5",
+        "type": "switch",
+        "z": "3bb7b73c.633fc8",
+        "name": "",
+        "property": "paths.textSearch_2.total",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "0",
+                "vt": "str"
+            },
+            {
+                "t": "gt",
+                "v": "0",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 622.5,
+        "y": 1198,
+        "wires": [
+            [
+                "299f2ee5.662682"
+            ],
+            [
+                "2be5cb96.c7c9a4"
+            ]
         ]
     }
 ]
