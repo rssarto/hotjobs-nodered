@@ -30,7 +30,7 @@
         "id": "b49ba76c.19a108",
         "type": "mongodb3",
         "z": "",
-        "uri": "mongodb://hst-mongodb:27017/post",
+        "uri": "$(MONGODB_URL)",
         "name": "Posts",
         "options": "",
         "parallelism": "-1"
@@ -39,7 +39,7 @@
         "id": "97f15423.b3c8f8",
         "type": "twitter-credentials",
         "z": "",
-        "screen_name": "rssarto"
+        "screen_name": "$(TWITTER_ID)"
     },
     {
         "id": "58b1acfe.4a4f04",
@@ -362,9 +362,9 @@
         "service": "_ext_",
         "configNode": "b49ba76c.19a108",
         "name": "",
-        "collection": "post",
+        "collection": "$(MONGODB_POST_COLLECTION)",
         "operation": "insertOne",
-        "x": 823.5,
+        "x": 923.5,
         "y": 1195,
         "wires": [
             []
