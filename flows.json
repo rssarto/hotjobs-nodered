@@ -349,9 +349,9 @@
         "tosidebar": true,
         "console": false,
         "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "x": 915.5,
+        "complete": "true",
+        "targetType": "full",
+        "x": 895.5,
         "y": 857,
         "wires": []
     },
